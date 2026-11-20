@@ -1,0 +1,331 @@
+{
+  "case_id": "sample02-diamond-apply",
+  "logical_time": 100,
+  "policy_generation": 1,
+  "keys": [
+    {
+      "key": "a",
+      "domain": [
+        "a0",
+        "a1",
+        "a2"
+      ],
+      "initial_value": "a0"
+    },
+    {
+      "key": "b",
+      "domain": [
+        "b0",
+        "b1",
+        "b2"
+      ],
+      "initial_value": "b0"
+    },
+    {
+      "key": "c",
+      "domain": [
+        "c0",
+        "c1"
+      ],
+      "initial_value": "c0"
+    },
+    {
+      "key": "d",
+      "domain": [
+        "d0",
+        "d1",
+        "d2"
+      ],
+      "initial_value": "d0"
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_id": "g1",
+      "active_key": "a",
+      "active_values": [
+        "a1",
+        "a2"
+      ],
+      "requires": [
+        {
+          "key": "b",
+          "allowed": [
+            "b1",
+            "b2"
+          ]
+        },
+        {
+          "key": "c",
+          "allowed": [
+            "c1"
+          ]
+        }
+      ]
+    }
+  ],
+  "transactions": [
+    {
+      "txn_id": "T1",
+      "committed_at": 10,
+      "category": "network",
+      "weight": 1,
+      "writes": [
+        {
+          "key": "a",
+          "old_value": "a0",
+          "new_value": "a1",
+          "new_version": 1
+        },
+        {
+          "key": "b",
+          "old_value": "b0",
+          "new_value": "b1",
+          "new_version": 1
+        },
+        {
+          "key": "c",
+          "old_value": "c0",
+          "new_value": "c1",
+          "new_version": 1
+        }
+      ]
+    },
+    {
+      "txn_id": "T2",
+      "committed_at": 20,
+      "category": "network",
+      "weight": 2,
+      "writes": [
+        {
+          "key": "a",
+          "old_value": "a1",
+          "new_value": "a2",
+          "new_version": 2
+        },
+        {
+          "key": "d",
+          "old_value": "d0",
+          "new_value": "d1",
+          "new_version": 1
+        }
+      ]
+    },
+    {
+      "txn_id": "T3",
+      "committed_at": 30,
+      "category": "noise",
+      "weight": 5,
+      "writes": [
+        {
+          "key": "d",
+          "old_value": "d1",
+          "new_value": "d2",
+          "new_version": 2
+        }
+      ]
+    },
+    {
+      "txn_id": "T4",
+      "committed_at": 40,
+      "category": "network",
+      "weight": 1,
+      "writes": [
+        {
+          "key": "a",
+          "old_value": "a2",
+          "new_value": "a1",
+          "new_version": 3
+        },
+        {
+          "key": "b",
+          "old_value": "b1",
+          "new_value": "b2",
+          "new_version": 2
+        }
+      ]
+    }
+  ],
+  "applications": [
+    {
+      "app_id": "APP1",
+      "target_txn_id": "T1",
+      "idempotency_key": "idem-app1-0001",
+      "window_start": 50,
+      "window_end": 200,
+      "requested_at": 60
+    }
+  ],
+  "approvals": [
+    {
+      "approval_id": "AP-T1-alice",
+      "app_id": "APP1",
+      "txn_id": "T1",
+      "reviewer": "alice",
+      "bound_versions": {
+        "a": 5,
+        "b": 3,
+        "c": 1
+      },
+      "decided_at": 80,
+      "policy_generation": 1
+    },
+    {
+      "approval_id": "AP-T2-bob",
+      "app_id": "APP1",
+      "txn_id": "T2",
+      "reviewer": "bob",
+      "bound_versions": {
+        "a": 4,
+        "b": 3,
+        "c": 1,
+        "d": 3
+      },
+      "decided_at": 78,
+      "policy_generation": 1
+    },
+    {
+      "approval_id": "AP-T4-carol",
+      "app_id": "APP1",
+      "txn_id": "T4",
+      "reviewer": "carol",
+      "bound_versions": {
+        "a": 3,
+        "b": 2,
+        "c": 1
+      },
+      "decided_at": 72,
+      "policy_generation": 1
+    },
+    {
+      "approval_id": "AP-T3-erin",
+      "app_id": "APP1",
+      "txn_id": "T3",
+      "reviewer": "erin",
+      "bound_versions": {
+        "d": 2
+      },
+      "decided_at": 74,
+      "policy_generation": 1
+    },
+    {
+      "approval_id": "AP-T2-dave",
+      "app_id": "APP1",
+      "txn_id": "T2",
+      "reviewer": "dave",
+      "bound_versions": {
+        "a": 3,
+        "b": 2,
+        "c": 1,
+        "d": 2
+      },
+      "decided_at": 73,
+      "policy_generation": 1
+    },
+    {
+      "approval_id": "AP-T2-bob-v2",
+      "app_id": "APP1",
+      "txn_id": "T2",
+      "reviewer": "bob",
+      "bound_versions": {
+        "a": 4,
+        "b": 3,
+        "c": 1,
+        "d": 3
+      },
+      "decided_at": 79,
+      "policy_generation": 1
+    }
+  ],
+  "plan_request": {
+    "app_id": "APP1"
+  },
+  "apply": {
+    "plan": {
+      "app_id": "APP1",
+      "closure": [
+        "T1",
+        "T2",
+        "T3",
+        "T4"
+      ],
+      "logical_time": 100,
+      "outside_cost": 0,
+      "policy_generation": 1,
+      "status": "ok",
+      "step_count": 4,
+      "steps": [
+        {
+          "approval_id": "AP-T3-erin",
+          "dep_versions": {
+            "d": 2
+          },
+          "in_closure": true,
+          "reviewer": "erin",
+          "seq": 1,
+          "txn_id": "T3",
+          "weight": 5
+        },
+        {
+          "approval_id": "AP-T4-carol",
+          "dep_versions": {
+            "a": 3,
+            "b": 2,
+            "c": 1
+          },
+          "in_closure": true,
+          "reviewer": "carol",
+          "seq": 2,
+          "txn_id": "T4",
+          "weight": 1
+        },
+        {
+          "approval_id": "AP-T2-bob",
+          "dep_versions": {
+            "a": 4,
+            "b": 3,
+            "c": 1,
+            "d": 3
+          },
+          "in_closure": true,
+          "reviewer": "bob",
+          "seq": 3,
+          "txn_id": "T2",
+          "weight": 2
+        },
+        {
+          "approval_id": "AP-T1-alice",
+          "dep_versions": {
+            "a": 5,
+            "b": 3,
+            "c": 1
+          },
+          "in_closure": true,
+          "reviewer": "alice",
+          "seq": 4,
+          "txn_id": "T1",
+          "weight": 1
+        }
+      ],
+      "target_txn_id": "T1",
+      "tiebreak": [
+        [
+          "T3",
+          "AP-T3-erin"
+        ],
+        [
+          "T4",
+          "AP-T4-carol"
+        ],
+        [
+          "T2",
+          "AP-T2-bob"
+        ],
+        [
+          "T1",
+          "AP-T1-alice"
+        ]
+      ]
+    }
+  }
+}

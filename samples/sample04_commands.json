@@ -1,0 +1,40 @@
+{
+  "case_id": "sample04-commands",
+  "logical_time": 100,
+  "policy_generation": 1,
+  "keys": [
+    {"key": "x", "domain": [0, 1], "initial_value": 0}
+  ],
+  "constraints": [],
+  "transactions": [
+    {
+      "txn_id": "T1",
+      "committed_at": 10,
+      "category": "feature-flag",
+      "weight": 1,
+      "writes": [
+        {"key": "x", "old_value": 0, "new_value": 1, "new_version": 1}
+      ]
+    }
+  ],
+  "applications": [],
+  "approvals": [],
+  "application": {
+    "app_id": "APP9",
+    "target_txn_id": "T1",
+    "idempotency_key": "idem-app9-0001",
+    "window_start": 20,
+    "window_end": 300,
+    "requested_at": 90
+  },
+  "approval": {
+    "approval_id": "AP9-T1",
+    "app_id": "APP9",
+    "txn_id": "T1",
+    "reviewer": "frank",
+    "bound_versions": {"x": 1},
+    "decided_at": 95,
+    "policy_generation": 1
+  },
+  "approval_id": "AP9-T1"
+}
